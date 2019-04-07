@@ -31,7 +31,7 @@ using System;
 using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Statistics;
 
-#if !PORTABLE
+#if !NETSTANDARD1_3
 using System.Runtime;
 #endif
 
@@ -81,7 +81,7 @@ namespace MathNet.Numerics
                 case 2:
                     return 1d - StudentT.CDF(0d, 1d, degreesFreedom, x) + StudentT.CDF(0d, 1d, degreesFreedom, -x);
                 default:
-                    throw new ArgumentOutOfRangeException("tails");
+                    throw new ArgumentOutOfRangeException(nameof(tails));
             }
         }
 
@@ -143,7 +143,7 @@ namespace MathNet.Numerics
                 case 4:
                     return ArrayStatistics.Maximum(array);
                 default:
-                    throw new ArgumentOutOfRangeException("quant");
+                    throw new ArgumentOutOfRangeException(nameof(quant));
             }
         }
 

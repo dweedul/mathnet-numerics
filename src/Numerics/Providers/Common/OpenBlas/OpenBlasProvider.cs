@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -34,19 +34,28 @@ using System.Collections.Generic;
 
 namespace MathNet.Numerics.Providers.Common.OpenBlas
 {
-    internal static class OpenBlasProvider
+    public static class OpenBlasProvider
     {
+        const int DesignTimeRevision = 1;
+        const int MinimumCompatibleRevision = 1;
+
         static int _nativeRevision;
         static bool _nativeX86;
         static bool _nativeX64;
         static bool _nativeIA64;
         static bool _nativeARM;
+        static bool _loaded;
 
-        public static bool IsAvailable(int minRevision)
+        public static bool IsAvailable(string hintPath = null)
         {
+            if (_loaded)
+            {
+                return true;
+            }
+
             try
             {
-                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName))
+                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath))
                 {
                     return false;
                 }
@@ -54,7 +63,7 @@ namespace MathNet.Numerics.Providers.Common.OpenBlas
                 int a = SafeNativeMethods.query_capability(0);
                 int b = SafeNativeMethods.query_capability(1);
                 int nativeRevision = SafeNativeMethods.query_capability((int)ProviderConfig.Revision);
-                return a == 0 && b == -1 && nativeRevision >= minRevision;
+                return a == 0 && b == -1 && nativeRevision >= MinimumCompatibleRevision;
             }
             catch
             {
@@ -62,12 +71,18 @@ namespace MathNet.Numerics.Providers.Common.OpenBlas
             }
         }
 
-        public static void Load(int minRevision)
+        /// <returns>Revision</returns>
+        public static int Load(string hintPath = null)
         {
+            if (_loaded)
+            {
+                return _nativeRevision;
+            }
+
             int a, b;
             try
             {
-                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName);
+                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath);
 
                 a = SafeNativeMethods.query_capability(0);
                 b = SafeNativeMethods.query_capability(1);
@@ -91,16 +106,37 @@ namespace MathNet.Numerics.Providers.Common.OpenBlas
                 throw new NotSupportedException("OpenBLAS Native Provider does not support capability querying and is therefore not compatible. Consider upgrading to a newer version.", e);
             }
 
-            if (a != 0 || b != -1 || _nativeRevision < minRevision)
+            if (a != 0 || b != -1 || _nativeRevision < MinimumCompatibleRevision)
             {
                 throw new NotSupportedException("OpenBLAS Native Provider too old. Consider upgrading to a newer version.");
             }
 
-            ConfigureThreading();
+            // set threading settings, if supported
+            if (SafeNativeMethods.query_capability((int)ProviderConfig.Threading) > 0)
+            {
+                SafeNativeMethods.set_max_threads(Control.MaxDegreeOfParallelism);
+            }
+
+            _loaded = true;
+            return _nativeRevision;
         }
 
-        static void ConfigureThreading()
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// This method is safe to call, even if the provider is not loaded.
+        /// </summary>
+        public static void FreeResources()
         {
+        }
+
+        internal static void ConfigureThreading()
+        {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             // set threading settings, if supported
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Threading) > 0)
             {
@@ -110,6 +146,11 @@ namespace MathNet.Numerics.Providers.Common.OpenBlas
 
         public static string Describe()
         {
+            if (!_loaded)
+            {
+                return "OpenBLAS (not loaded)";
+            }
+
             var parts = new List<string>();
             if (_nativeX86) parts.Add("x86");
             if (_nativeX64) parts.Add("x64");
@@ -117,7 +158,7 @@ namespace MathNet.Numerics.Providers.Common.OpenBlas
             if (_nativeARM) parts.Add("ARM");
             parts.Add("revision " + _nativeRevision);
 
-            return string.Concat("OpenBLAS (", string.Join("; ", parts), ")");
+            return string.Concat("OpenBLAS (", string.Join("; ", parts.ToArray()), ")");
         }
     }
 }

@@ -508,12 +508,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (result.RowCount != RowCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, nameof(result));
             }
 
             if (result.ColumnCount != ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, nameof(result));
             }
 
             if (scalar.Equals(One))
@@ -563,12 +563,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (result.RowCount != RowCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, nameof(result));
             }
 
             if (result.ColumnCount != ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, nameof(result));
             }
 
             if (scalar.Equals(One))
@@ -607,12 +607,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (result.RowCount != RowCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameRowDimension, nameof(result));
             }
 
             if (result.ColumnCount != ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixSameColumnDimension, nameof(result));
             }
 
             DoDivideByThis(scalar, result);
@@ -1568,7 +1568,7 @@ namespace MathNet.Numerics.LinearAlgebra
         /// <param name="f">Function which takes two matrices, modifies the second in place and returns void</param>
         /// <param name="other">The other matrix to be passed to the function as argument. It is not modified</param>
         /// <returns>The resulting matrix</returns>
-        /// <exception cref="ArgumentException">If this amtrix and <paramref name="result"/> are not the same dimension.</exception>
+        /// <exception cref="ArgumentException">If this matrix and <paramref name="other"/> are not the same dimension.</exception>
         protected Matrix<T> PointwiseBinary(Action<Matrix<T>, Matrix<T>> f, Matrix<T> other)
         {
             if (ColumnCount != other.ColumnCount || RowCount != other.RowCount)
@@ -1587,8 +1587,9 @@ namespace MathNet.Numerics.LinearAlgebra
         /// </summary>
         /// <param name="f">Function which takes two matrices, modifies the second in place and returns void</param>
         /// <param name="other">The other matrix to be passed to the function as argument. It is not modified</param>
+        /// <param name="result">The matrix to store the result.</param>
         /// <returns>The resulting matrix</returns>
-        /// <exception cref="ArgumentException">If this matrix and <paramref name="result"/> are not the same dimension.</exception>
+        /// <exception cref="ArgumentException">If this matrix and <paramref name="other"/> are not the same dimension.</exception>
         protected void PointwiseBinary(Action<Matrix<T>,Matrix<T>> f, Matrix<T> other, Matrix<T> result)
         {
             if (ColumnCount != result.ColumnCount || RowCount != result.RowCount || ColumnCount != other.ColumnCount || RowCount != other.RowCount)
@@ -1720,7 +1721,8 @@ namespace MathNet.Numerics.LinearAlgebra
         /// matrix and a given other matrix being the 'x' of atan2 and the
         /// 'this' matrix being the 'y'
         /// </summary>
-        /// <param name="other"></param>
+        /// <param name="other">The other matrix 'y'</param>
+        /// <param name="result">The matrix with the result and 'x'</param>
         /// <returns></returns>
         public void PointwiseAtan2(Matrix<T> other, Matrix<T> result)
         {

@@ -83,7 +83,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         /// </summary>
         public override T At(int index)
         {
-            // Search if item idex exists in NonZeroIndices array in range "0 - nonzero values count"
+            // Search if item index exists in NonZeroIndices array in range "0 - nonzero values count"
             var itemIndex = Array.BinarySearch(Indices, 0, ValueCount, index);
             return itemIndex >= 0 ? Values[itemIndex] : Zero;
         }
@@ -317,7 +317,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
 
             if (length < 1)
             {
-                throw new ArgumentOutOfRangeException("length", string.Format(Resources.ArgumentLessThanOne, length));
+                throw new ArgumentOutOfRangeException(nameof(length), string.Format(Resources.ArgumentLessThanOne, length));
             }
 
             var indices = new int[length];
@@ -340,7 +340,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (length < 1)
             {
-                throw new ArgumentOutOfRangeException("length", string.Format(Resources.ArgumentLessThanOne, length));
+                throw new ArgumentOutOfRangeException(nameof(length), string.Format(Resources.ArgumentLessThanOne, length));
             }
 
             var indices = new List<int>();
@@ -366,7 +366,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var indices = new List<int>();
@@ -395,7 +395,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var indices = new List<int>();
@@ -458,7 +458,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             if (Length != target.Length)
             {
                 var message = string.Format(Resources.ArgumentMatrixDimensions2, Length, target.Length);
-                throw new ArgumentException(message, "target");
+                throw new ArgumentException(message, nameof(target));
             }
 
             target.ValueCount = ValueCount;
@@ -774,7 +774,75 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             return base.Find2Unchecked(other, predicate, zeros);
         }
 
-        // FUNCTIONAL COMBINATORS
+        // FUNCTIONAL COMBINATORS: MAP
+
+        public override void MapInplace(Func<T, T> f, Zeros zeros)
+        {
+            var indices = new List<int>();
+            var values = new List<T>(ValueCount);
+            if (zeros == Zeros.Include || !Zero.Equals(f(Zero)))
+            {
+                int k = 0;
+                for (int i = 0; i < Length; i++)
+                {
+                    var item = k < ValueCount && (Indices[k]) == i ? f(Values[k++]) : f(Zero);
+                    if (!Zero.Equals(item))
+                    {
+                        values.Add(item);
+                        indices.Add(i);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < ValueCount; i++)
+                {
+                    var item = f(Values[i]);
+                    if (!Zero.Equals(item))
+                    {
+                        values.Add(item);
+                        indices.Add(Indices[i]);
+                    }
+                }
+            }
+            Indices = indices.ToArray();
+            Values = values.ToArray();
+            ValueCount = values.Count;
+        }
+
+        public override void MapIndexedInplace(Func<int, T, T> f, Zeros zeros)
+        {
+            var indices = new List<int>();
+            var values = new List<T>(ValueCount);
+            if (zeros == Zeros.Include)
+            {
+                int k = 0;
+                for (int i = 0; i < Length; i++)
+                {
+                    var item = k < ValueCount && (Indices[k]) == i ? f(i, Values[k++]) : f(i, Zero);
+                    if (!Zero.Equals(item))
+                    {
+                        values.Add(item);
+                        indices.Add(i);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < ValueCount; i++)
+                {
+                    var item = f(Indices[i], Values[i]);
+                    if (!Zero.Equals(item))
+                    {
+                        values.Add(item);
+                        indices.Add(Indices[i]);
+                    }
+                }
+            }
+            Indices = indices.ToArray();
+            Values = values.ToArray();
+            ValueCount = values.Count;
+        }
 
         internal override void MapToUnchecked<TU>(VectorStorage<TU> target, Func<T, TU> f, Zeros zeros, ExistingData existingData)
         {
@@ -1073,6 +1141,8 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
 
             base.Map2ToUnchecked(target, other, f, zeros, existingData);
         }
+
+        // FUNCTIONAL COMBINATORS: MAP
 
         internal override TState Fold2Unchecked<TOther, TState>(VectorStorage<TOther> other, Func<TState, T, TOther, TState> f, TState state, Zeros zeros)
         {

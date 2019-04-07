@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -37,7 +37,7 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Mkl
     /// <summary>
     /// Error codes return from the MKL provider.
     /// </summary>
-    public enum MklError : int
+    internal enum MklError : int
     {
         /// <summary>
         /// Unable to allocate memory.
@@ -46,95 +46,35 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Mkl
     }
 
     /// <summary>
-    /// Consistency vs. performance trade-off between runs on different machines.
-    /// </summary>
-    [Obsolete("Will be removed in the next major version. Use the enums in the Common namespace instead.")]
-    public enum MklConsistency : int
-    {
-        /// <summary>Consistent on the same CPU only (maximum performance)</summary>
-        Auto = 2,
-        /// <summary>Consistent on Intel and compatible CPUs with SSE2 support (maximum compatibility)</summary>
-        Compatible = 3,
-        /// <summary>Consistent on Intel CPUs supporting SSE2 or later</summary>
-        SSE2 = 4,
-        /// <summary>Consistent on Intel CPUs supporting SSE4.2 or later</summary>
-        SSE4_2 = 8,
-        /// <summary>Consistent on Intel CPUs supporting AVX or later</summary>
-        AVX = 9,
-        /// <summary>Consistent on Intel CPUs supporting AVX2 or later</summary>
-        AVX2 = 10
-    }
-
-    [CLSCompliant(false)]
-    [Obsolete("Will be removed in the next major version. Use the enums in the Common namespace instead.")]
-    public enum MklAccuracy : uint
-    {
-        Low = 0x1,
-        High = 0x2
-    }
-
-    [CLSCompliant(false)]
-    [Obsolete("Will be removed in the next major version. Use the enums in the Common namespace instead.")]
-    public enum MklPrecision : uint
-    {
-        Single = 0x10,
-        Double = 0x20
-    }
-
-    /// <summary>
     /// Intel's Math Kernel Library (MKL) linear algebra provider.
     /// </summary>
-    public partial class MklLinearAlgebraProvider : ManagedLinearAlgebraProvider
+    internal partial class MklLinearAlgebraProvider : Managed.ManagedLinearAlgebraProvider, IDisposable
     {
-        readonly Common.Mkl.MklConsistency _consistency;
-        readonly Common.Mkl.MklPrecision _precision;
-        readonly Common.Mkl.MklAccuracy _accuracy;
+        const int MinimumCompatibleRevision = 4;
+
+        readonly string _hintPath;
+        readonly MklConsistency _consistency;
+        readonly MklPrecision _precision;
+        readonly MklAccuracy _accuracy;
 
         int _linearAlgebraMajor;
         int _linearAlgebraMinor;
         int _vectorFunctionsMajor;
         int _vectorFunctionsMinor;
 
+        /// <param name="hintPath">Hint path where to look for the native binaries</param>
         /// <param name="consistency">
         /// Sets the desired bit consistency on repeated identical computations on varying CPU architectures,
         /// as a trade-off with performance.
         /// </param>
         /// <param name="precision">VML optimal precision and rounding.</param>
         /// <param name="accuracy">VML accuracy mode.</param>
-        [CLSCompliant(false)]
-        [Obsolete("Will be removed in the next major version. Use the enums in the Common namespace instead.")]
-        public MklLinearAlgebraProvider(
-            MklConsistency consistency = MklConsistency.Auto,
-            MklPrecision precision = MklPrecision.Double,
-            MklAccuracy accuracy = MklAccuracy.High)
+        internal MklLinearAlgebraProvider(string hintPath, MklConsistency consistency, MklPrecision precision, MklAccuracy accuracy)
         {
-            _consistency = (Common.Mkl.MklConsistency)consistency;
-            _precision = (Common.Mkl.MklPrecision)precision;
-            _accuracy = (Common.Mkl.MklAccuracy)accuracy;
-        }
-
-        /// <param name="consistency">
-        /// Sets the desired bit consistency on repeated identical computations on varying CPU architectures,
-        /// as a trade-off with performance.
-        /// </param>
-        /// <param name="precision">VML optimal precision and rounding.</param>
-        /// <param name="accuracy">VML accuracy mode.</param>
-        [CLSCompliant(false)]
-        public MklLinearAlgebraProvider(
-            Common.Mkl.MklConsistency consistency = Common.Mkl.MklConsistency.Auto,
-            Common.Mkl.MklPrecision precision = Common.Mkl.MklPrecision.Double,
-            Common.Mkl.MklAccuracy accuracy = Common.Mkl.MklAccuracy.High)
-        {
+            _hintPath = hintPath;
             _consistency = consistency;
             _precision = precision;
             _accuracy = accuracy;
-        }
-
-        public MklLinearAlgebraProvider()
-        {
-            _consistency = Common.Mkl.MklConsistency.Auto;
-            _precision = Common.Mkl.MklPrecision.Double;
-            _accuracy = Common.Mkl.MklAccuracy.High;
         }
 
         /// <summary>
@@ -143,7 +83,7 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Mkl
         /// </summary>
         public override bool IsAvailable()
         {
-            return MklProvider.IsAvailable(minRevision: 4);
+            return MklProvider.IsAvailable(hintPath: _hintPath);
         }
 
         /// <summary>
@@ -152,8 +92,11 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Mkl
         /// </summary>
         public override void InitializeVerify()
         {
-            MklProvider.Load(minRevision: 4);
-            MklProvider.ConfigurePrecision(_consistency, _precision, _accuracy);
+            int revision = MklProvider.Load(_hintPath, _consistency, _precision, _accuracy);
+            if (revision < MinimumCompatibleRevision)
+            {
+                throw new NotSupportedException($"MKL Native Provider revision r{revision} is too old. Consider upgrading to a newer version. Revision r{MinimumCompatibleRevision} and newer are supported.");
+            }
 
             _linearAlgebraMajor = SafeNativeMethods.query_capability((int)ProviderCapability.LinearAlgebraMajor);
             _linearAlgebraMinor = SafeNativeMethods.query_capability((int)ProviderCapability.LinearAlgebraMinor);
@@ -168,68 +111,22 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Mkl
         }
 
         /// <summary>
-        /// Frees the memory allocated to the MKL memory pool.
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
         /// </summary>
-        public void FreeBuffers()
+        public override void FreeResources()
         {
-            MklProvider.FreeBuffers();
-        }
-
-        /// <summary>
-        /// Frees the memory allocated to the MKL memory pool on the current thread.
-        /// </summary>
-        public void ThreadFreeBuffers()
-        {
-            MklProvider.ThreadFreeBuffers();
-        }
-
-        /// <summary>
-        /// Disable the MKL memory pool. May impact performance.
-        /// </summary>
-        public void DisableMemoryPool()
-        {
-            MklProvider.DisableMemoryPool();
-        }
-
-        /// <summary>
-        /// Retrieves information about the MKL memory pool.
-        /// </summary>
-        /// <param name="allocatedBuffers">On output, returns the number of memory buffers allocated.</param>
-        /// <returns>Returns the number of bytes allocated to all memory buffers.</returns>
-        public long MemoryStatistics(out int allocatedBuffers)
-        {
-            return MklProvider.MemoryStatistics(out allocatedBuffers);
-        }
-
-        /// <summary>
-        /// Enable gathering of peak memory statistics of the MKL memory pool.
-        /// </summary>
-        public void EnablePeakMemoryStatistics()
-        {
-            MklProvider.EnablePeakMemoryStatistics();
-        }
-
-        /// <summary>
-        /// Disable gathering of peak memory statistics of the MKL memory pool.
-        /// </summary>
-        public void DisablePeakMemoryStatistics()
-        {
-            MklProvider.DisablePeakMemoryStatistics();
-        }
-
-        /// <summary>
-        /// Measures peak memory usage of the MKL memory pool.
-        /// </summary>
-        /// <param name="reset">Whether the usage counter should be reset.</param>
-        /// <returns>The peak number of bytes allocated to all memory buffers.</returns>
-        public long PeakMemoryStatistics(bool reset = true)
-        {
-            return MklProvider.PeakMemoryStatistics(reset);
+            MklProvider.FreeResources();
         }
 
         public override string ToString()
         {
             return MklProvider.Describe();
+        }
+
+        public void Dispose()
+        {
+            FreeResources();
         }
     }
 }

@@ -43,15 +43,13 @@ namespace MathNet.Numerics.Statistics
     /// This type declares a DataContract for out of the box ephemeral serialization
     /// with engines like DataContractSerializer, Protocol Buffers and FsPickler,
     /// but does not guarantee any compatibility between versions.
-    /// It is not recommended to rely on this mechanism for durable persistance.
+    /// It is not recommended to rely on this mechanism for durable persistence.
     /// </remarks>
     [Serializable]
     [DataContract(Namespace = "urn:MathNet/Numerics")]
-    public class Bucket :
-#if PORTABLE
-   IComparable<Bucket>
-#else
-    IComparable<Bucket>, ICloneable
+    public class Bucket : IComparable<Bucket>
+#if !NETSTANDARD1_3
+        , ICloneable
 #endif
     {
         /// <summary>
@@ -108,7 +106,7 @@ namespace MathNet.Numerics.Statistics
 
             if (count < 0.0)
             {
-                throw new ArgumentOutOfRangeException("count", Resources.ArgumentMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(count), Resources.ArgumentMustBePositive);
             }
 
             LowerBound = lowerBound;
@@ -283,14 +281,14 @@ namespace MathNet.Numerics.Statistics
         /// Constructs a Histogram with a specific number of equally sized buckets. The upper and lower bound of the histogram
         /// will be set to the smallest and largest datapoint.
         /// </summary>
-        /// <param name="data">The datasequence to build a histogram on.</param>
+        /// <param name="data">The data sequence to build a histogram on.</param>
         /// <param name="nbuckets">The number of buckets to use.</param>
         public Histogram(IEnumerable<double> data, int nbuckets)
             : this()
         {
             if (nbuckets < 1)
             {
-                throw new ArgumentOutOfRangeException("data", "The number of bins in a histogram should be at least 1.");
+                throw new ArgumentOutOfRangeException(nameof(data), "The number of bins in a histogram should be at least 1.");
             }
 
             double lower = data.Minimum();
@@ -299,7 +297,7 @@ namespace MathNet.Numerics.Statistics
 
             if (double.IsNaN(width))
             {
-                throw new ArgumentException("Data must contain at least one entry.", "data");
+                throw new ArgumentException("Data must contain at least one entry.", nameof(data));
             }
 
             // Add buckets for each bin; the smallest bucket's lowerbound must be slightly smaller
@@ -319,7 +317,7 @@ namespace MathNet.Numerics.Statistics
         /// <summary>
         /// Constructs a Histogram with a specific number of equally sized buckets.
         /// </summary>
-        /// <param name="data">The datasequence to build a histogram on.</param>
+        /// <param name="data">The data sequence to build a histogram on.</param>
         /// <param name="nbuckets">The number of buckets to use.</param>
         /// <param name="lower">The histogram lower bound.</param>
         /// <param name="upper">The histogram upper bound.</param>
@@ -328,12 +326,12 @@ namespace MathNet.Numerics.Statistics
         {
             if (lower > upper)
             {
-                throw new ArgumentOutOfRangeException("upper", "The histogram lower bound must be smaller than the upper bound.");
+                throw new ArgumentOutOfRangeException(nameof(upper), "The histogram lower bound must be smaller than the upper bound.");
             }
 
             if (nbuckets < 1)
             {
-                throw new ArgumentOutOfRangeException("nbuckets", "The number of bins in a histogram should be at least 1.");
+                throw new ArgumentOutOfRangeException(nameof(nbuckets), "The number of bins in a histogram should be at least 1.");
             }
 
             double width = (upper - lower) / nbuckets;

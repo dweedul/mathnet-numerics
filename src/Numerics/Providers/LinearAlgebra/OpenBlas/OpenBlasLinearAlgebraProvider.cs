@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -55,15 +55,25 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.OpenBlas
     /// <summary>
     /// OpenBLAS linear algebra provider.
     /// </summary>
-    public partial class OpenBlasLinearAlgebraProvider : ManagedLinearAlgebraProvider
+    internal partial class OpenBlasLinearAlgebraProvider : Managed.ManagedLinearAlgebraProvider, IDisposable
     {
+        const int MinimumCompatibleRevision = 1;
+
+        readonly string _hintPath;
+
+        /// <param name="hintPath">Hint path where to look for the native binaries</param>
+        internal OpenBlasLinearAlgebraProvider(string hintPath)
+        {
+            _hintPath = hintPath;
+        }
+
         /// <summary>
         /// Try to find out whether the provider is available, at least in principle.
         /// Verification may still fail if available, but it will certainly fail if unavailable.
         /// </summary>
         public override bool IsAvailable()
         {
-            return OpenBlasProvider.IsAvailable(minRevision: 1);
+            return OpenBlasProvider.IsAvailable(hintPath: _hintPath);
         }
 
         /// <summary>
@@ -72,7 +82,11 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.OpenBlas
         /// </summary>
         public override void InitializeVerify()
         {
-            OpenBlasProvider.Load(minRevision: 1);
+            int revision = OpenBlasProvider.Load(hintPath: _hintPath);
+            if (revision < MinimumCompatibleRevision)
+            {
+                throw new NotSupportedException($"OpenBLAS Native Provider revision r{revision} is too old. Consider upgrading to a newer version. Revision r{MinimumCompatibleRevision} and newer are supported.");
+            }
 
             int linearAlgebra = SafeNativeMethods.query_capability((int)ProviderCapability.LinearAlgebraMajor);
 
@@ -83,9 +97,23 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.OpenBlas
             }
         }
 
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// </summary>
+        public override void FreeResources()
+        {
+            OpenBlasProvider.FreeResources();
+        }
+
         public override string ToString()
         {
             return OpenBlasProvider.Describe();
+        }
+
+        public void Dispose()
+        {
+            FreeResources();
         }
     }
 }

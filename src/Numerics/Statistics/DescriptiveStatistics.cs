@@ -44,7 +44,7 @@ namespace MathNet.Numerics.Statistics
     /// This type declares a DataContract for out of the box ephemeral serialization
     /// with engines like DataContractSerializer, Protocol Buffers and FsPickler,
     /// but does not guarantee any compatibility between versions.
-    /// It is not recommended to rely on this mechanism for durable persistance.
+    /// It is not recommended to rely on this mechanism for durable persistence.
     /// </remarks>
     [DataContract(Namespace = "urn:MathNet/Numerics")]
     public class DescriptiveStatistics
@@ -65,7 +65,7 @@ namespace MathNet.Numerics.Statistics
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (increasedAccuracy)
@@ -94,7 +94,7 @@ namespace MathNet.Numerics.Statistics
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (increasedAccuracy)

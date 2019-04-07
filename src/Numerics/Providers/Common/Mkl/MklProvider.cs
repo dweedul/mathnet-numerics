@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -34,20 +34,28 @@ using System.Collections.Generic;
 
 namespace MathNet.Numerics.Providers.Common.Mkl
 {
-    internal static class MklProvider
+    public static class MklProvider
     {
-        const int _designTimeRevision = 11;
+        const int DesignTimeRevision = 12;
+        const int MinimumCompatibleRevision = 4;
+
         static int _nativeRevision;
         static Version _mklVersion;
         static bool _nativeX86;
         static bool _nativeX64;
         static bool _nativeIA64;
+        static bool _loaded;
 
-        public static bool IsAvailable(int minRevision)
+        public static bool IsAvailable(string hintPath = null)
         {
+            if (_loaded)
+            {
+                return true;
+            }
+
             try
             {
-                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName))
+                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath))
                 {
                     return false;
                 }
@@ -55,7 +63,7 @@ namespace MathNet.Numerics.Providers.Common.Mkl
                 int a = SafeNativeMethods.query_capability(0);
                 int b = SafeNativeMethods.query_capability(1);
                 int nativeRevision = SafeNativeMethods.query_capability((int)ProviderConfig.Revision);
-                return a == 0 && b == -1 && nativeRevision >= minRevision;
+                return a == 0 && b == -1 && nativeRevision >= MinimumCompatibleRevision;
             }
             catch
             {
@@ -63,12 +71,29 @@ namespace MathNet.Numerics.Providers.Common.Mkl
             }
         }
 
-        public static void Load(int minRevision)
+        /// <returns>Revision</returns>
+        public static int Load(string hintPath = null)
         {
+            return Load(hintPath, MklConsistency.Auto, MklPrecision.Double, MklAccuracy.High);
+        }
+
+        /// <returns>Revision</returns>
+        [CLSCompliant(false)]
+        public static int Load(
+            string hintPath = null,
+            MklConsistency consistency = MklConsistency.Auto,
+            MklPrecision precision = MklPrecision.Double,
+            MklAccuracy accuracy = MklAccuracy.High)
+        {
+            if (_loaded)
+            {
+                return _nativeRevision;
+            }
+
             int a, b;
             try
             {
-                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName);
+                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath);
 
                 a = SafeNativeMethods.query_capability(0);
                 b = SafeNativeMethods.query_capability(1);
@@ -77,6 +102,19 @@ namespace MathNet.Numerics.Providers.Common.Mkl
                 _nativeX86 = SafeNativeMethods.query_capability((int)ProviderPlatform.x86) > 0;
                 _nativeX64 = SafeNativeMethods.query_capability((int)ProviderPlatform.x64) > 0;
                 _nativeIA64 = SafeNativeMethods.query_capability((int)ProviderPlatform.ia64) > 0;
+
+                // set numerical consistency, precision and accuracy modes, if supported
+                if (SafeNativeMethods.query_capability((int)ProviderConfig.Precision) > 0)
+                {
+                    SafeNativeMethods.set_consistency_mode((int)consistency);
+                    SafeNativeMethods.set_vml_mode((uint)precision | (uint)accuracy);
+                }
+
+                // set threading settings, if supported
+                if (SafeNativeMethods.query_capability((int)ProviderConfig.Threading) > 0)
+                {
+                    SafeNativeMethods.set_max_threads(Control.MaxDegreeOfParallelism);
+                }
 
                 _mklVersion = new Version(
                     SafeNativeMethods.query_capability((int)ProviderConfig.MklMajorVersion),
@@ -96,31 +134,28 @@ namespace MathNet.Numerics.Providers.Common.Mkl
                 throw new NotSupportedException("MKL Native Provider does not support capability querying and is therefore not compatible. Consider upgrading to a newer version.", e);
             }
 
-            if (a != 0 || b != -1 || _nativeRevision < minRevision)
+            if (a != 0 || b != -1 || _nativeRevision < MinimumCompatibleRevision)
             {
                 throw new NotSupportedException("MKL Native Provider too old. Consider upgrading to a newer version.");
             }
 
-            ConfigureThreading();
+            _loaded = true;
+            return _nativeRevision;
         }
 
-        static void ConfigureThreading()
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// This method is safe to call, even if the provider is not loaded.
+        /// </summary>
+        public static void FreeResources()
         {
-            // set threading settings, if supported
-            if (SafeNativeMethods.query_capability((int)ProviderConfig.Threading) > 0)
+            if (!_loaded)
             {
-                SafeNativeMethods.set_max_threads(Control.MaxDegreeOfParallelism);
+                return;
             }
-        }
 
-        public static void ConfigurePrecision(MklConsistency consistency, MklPrecision precision, MklAccuracy accuracy)
-        {
-            // set numerical consistency, precision and accuracy modes, if supported
-            if (SafeNativeMethods.query_capability((int)ProviderConfig.Precision) > 0)
-            {
-                SafeNativeMethods.set_consistency_mode((int)consistency);
-                SafeNativeMethods.set_vml_mode((uint)precision | (uint)accuracy);
-            }
+            FreeBuffers();
         }
 
         /// <summary>
@@ -128,6 +163,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// </summary>
         public static void FreeBuffers()
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -141,6 +181,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// </summary>
         public static void ThreadFreeBuffers()
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -154,6 +199,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// </summary>
         public static void DisableMemoryPool()
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -169,6 +219,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// <returns>Returns the number of bytes allocated to all memory buffers.</returns>
         public static long MemoryStatistics(out int allocatedBuffers)
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -182,6 +237,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// </summary>
         public static void EnablePeakMemoryStatistics()
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -195,6 +255,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// </summary>
         public static void DisablePeakMemoryStatistics()
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -210,6 +275,11 @@ namespace MathNet.Numerics.Providers.Common.Mkl
         /// <returns>The peak number of bytes allocated to all memory buffers.</returns>
         public static long PeakMemoryStatistics(bool reset = true)
         {
+            if (!_loaded)
+            {
+                throw new InvalidOperationException();
+            }
+
             if (SafeNativeMethods.query_capability((int)ProviderConfig.Memory) < 1)
             {
                 throw new NotSupportedException("MKL Native Provider does not support memory management functions. Consider upgrading to a newer version.");
@@ -220,13 +290,18 @@ namespace MathNet.Numerics.Providers.Common.Mkl
 
         public static string Describe()
         {
+            if (!_loaded)
+            {
+                return "Intel MKL (not loaded)";
+            }
+
             var parts = new List<string>();
             if (_nativeX86) parts.Add("x86");
             if (_nativeX64) parts.Add("x64");
             if (_nativeIA64) parts.Add("IA64");
             parts.Add("revision " + _nativeRevision);
-            if (_nativeRevision > _designTimeRevision) parts.Add("ahead revision " + _designTimeRevision);
-            if (_nativeRevision < _designTimeRevision) parts.Add("behind revision " + _designTimeRevision);
+            if (_nativeRevision > DesignTimeRevision) parts.Add("ahead revision " + DesignTimeRevision);
+            if (_nativeRevision < DesignTimeRevision) parts.Add("behind revision " + DesignTimeRevision);
             if (_mklVersion.Major > 0)
             {
                 parts.Add(_mklVersion.Build == 0
@@ -234,7 +309,7 @@ namespace MathNet.Numerics.Providers.Common.Mkl
                     : string.Concat("MKL ", _mklVersion.ToString(2), " Update ", _mklVersion.Build));
             }
 
-            return string.Concat("Intel MKL (", string.Join("; ", parts), ")");
+            return string.Concat("Intel MKL (", string.Join("; ", parts.ToArray()), ")");
         }
 
         enum MklMemoryRequestMode : int

@@ -27,20 +27,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-using MathNet.Numerics.LinearAlgebra.Storage;
-using MathNet.Numerics.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using MathNet.Numerics.LinearAlgebra.Storage;
+using MathNet.Numerics.Providers.LinearAlgebra;
+using MathNet.Numerics.Threading;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex
 {
-
-#if NOSYSNUMERICS
-    using Numerics;
-#else
-    using System.Numerics;
-#endif
+    using Complex = System.Numerics.Complex;
 
     /// <summary>
     /// A vector with sparse storage, intended for very large vectors where most of the cells are zero.
@@ -173,7 +169,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
                     vnonZeroValues[indices[j]] = values[j] + scalar;
                 }
 
-                //assign this vectors arrary to the new arrays.
+                //assign this vectors array to the new arrays.
                 _storage.Values = vnonZeroValues;
                 _storage.Indices = vnonZeroIndices;
                 _storage.ValueCount = Count;
@@ -399,7 +395,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
                 Array.Copy(_storage.Values, 0, sparseResult._storage.Values, 0, _storage.ValueCount);
             }
 
-            Control.LinearAlgebraProvider.ScaleArray(-Complex.One, sparseResult._storage.Values, sparseResult._storage.Values);
+            LinearAlgebraControl.Provider.ScaleArray(-Complex.One, sparseResult._storage.Values, sparseResult._storage.Values);
         }
 
         /// <summary>
@@ -420,7 +416,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
                     Array.Copy(_storage.Values, 0, sparseResult._storage.Values, 0, _storage.ValueCount);
                 }
 
-                Control.LinearAlgebraProvider.ConjugateArray(sparseResult._storage.Values, sparseResult._storage.Values);
+                LinearAlgebraControl.Provider.ConjugateArray(sparseResult._storage.Values, sparseResult._storage.Values);
                 return;
             }
 
@@ -462,7 +458,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
                     Array.Copy(_storage.Values, 0, sparseResult._storage.Values, 0, _storage.ValueCount);
                 }
 
-                Control.LinearAlgebraProvider.ScaleArray(scalar, sparseResult._storage.Values, sparseResult._storage.Values);
+                LinearAlgebraControl.Provider.ScaleArray(scalar, sparseResult._storage.Values, sparseResult._storage.Values);
             }
         }
 
@@ -528,7 +524,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (SparseVector)leftSide.Add(rightSide);
@@ -544,7 +540,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (rightSide == null)
             {
-                throw new ArgumentNullException("rightSide");
+                throw new ArgumentNullException(nameof(rightSide));
             }
 
             return (SparseVector)rightSide.Negate();
@@ -562,7 +558,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (SparseVector)leftSide.Subtract(rightSide);
@@ -579,7 +575,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (SparseVector)leftSide.Multiply(rightSide);
@@ -596,7 +592,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (rightSide == null)
             {
-                throw new ArgumentNullException("rightSide");
+                throw new ArgumentNullException(nameof(rightSide));
             }
 
             return (SparseVector)rightSide.Multiply(leftSide);
@@ -614,7 +610,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return leftSide.DotProduct(rightSide);
@@ -631,7 +627,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (SparseVector)leftSide.Divide(rightSide);
@@ -648,7 +644,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (SparseVector)leftSide.Modulus(rightSide);
@@ -752,7 +748,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         /// <returns>Scalar <c>ret = ( ∑|this[i]|^p )^(1/p)</c></returns>
         public override double Norm(double p)
         {
-            if (p < 0d) throw new ArgumentOutOfRangeException("p");
+            if (p < 0d) throw new ArgumentOutOfRangeException(nameof(p));
 
             if (_storage.ValueCount == 0)
             {
@@ -810,7 +806,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             value = value.Trim();

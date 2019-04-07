@@ -57,12 +57,12 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (data.Length != rows*columns)
             {
-                throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, rows*columns));
+                throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, rows*columns));
             }
 
             Data = data;
@@ -115,7 +115,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         /// </summary>
         void RowColumnAtIndex(int index, out int row, out int column)
         {
-#if PORTABLE
+#if NETSTANDARD1_3
             row = index % RowCount;
             column = index / RowCount;
 #else
@@ -232,7 +232,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data.Length <= 0)
             {
-                throw new ArgumentOutOfRangeException("data", Resources.MatrixCanNotBeEmpty);
+                throw new ArgumentOutOfRangeException(nameof(data), Resources.MatrixCanNotBeEmpty);
             }
 
             int columns = data.Length;
@@ -249,7 +249,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data.Length <= 0)
             {
-                throw new ArgumentOutOfRangeException("data", Resources.MatrixCanNotBeEmpty);
+                throw new ArgumentOutOfRangeException(nameof(data), Resources.MatrixCanNotBeEmpty);
             }
 
             int rows = data.Length;
@@ -291,7 +291,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data.Length <= 0)
             {
-                throw new ArgumentOutOfRangeException("data", Resources.MatrixCanNotBeEmpty);
+                throw new ArgumentOutOfRangeException(nameof(data), Resources.MatrixCanNotBeEmpty);
             }
 
             int columns = data.Length;
@@ -322,7 +322,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data.Length <= 0)
             {
-                throw new ArgumentOutOfRangeException("data", Resources.MatrixCanNotBeEmpty);
+                throw new ArgumentOutOfRangeException(nameof(data), Resources.MatrixCanNotBeEmpty);
             }
 
             int rows = data.Length;
@@ -372,7 +372,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             {
                 for (int column = 0; column < columns; column++)
                 {
-                    if (!columnIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, columns));
+                    if (!columnIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, columns));
                     var arrayColumn = columnIterator.Current as T[];
                     if (arrayColumn != null)
                     {
@@ -385,14 +385,14 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
                             var end = (column + 1)*rows;
                             for (int index = column*rows; index < end; index++)
                             {
-                                if (!rowIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, rows));
+                                if (!rowIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, rows));
                                 array[index] = rowIterator.Current;
                             }
-                            if (rowIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, rows));
+                            if (rowIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, rows));
                         }
                     }
                 }
-                if (columnIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, columns));
+                if (columnIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, columns));
             }
             return new DenseColumnMajorMatrixStorage<T>(rows, columns, array);
         }
@@ -404,18 +404,18 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             {
                 for (int row = 0; row < rows; row++)
                 {
-                    if (!rowIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, rows));
+                    if (!rowIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, rows));
                     using (var columnIterator = rowIterator.Current.GetEnumerator())
                     {
                         for (int index = row; index < array.Length; index += rows)
                         {
-                            if (!columnIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, columns));
+                            if (!columnIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, columns));
                             array[index] = columnIterator.Current;
                         }
-                        if (columnIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, columns));
+                        if (columnIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, columns));
                     }
                 }
-                if (rowIterator.MoveNext()) throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, rows));
+                if (rowIterator.MoveNext()) throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, rows));
             }
             return new DenseColumnMajorMatrixStorage<T>(rows, columns, array);
         }
@@ -819,7 +819,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
 
         // FUNCTIONAL COMBINATORS: MAP
 
-        public override void MapInplace(Func<T, T> f, Zeros zeros = Zeros.AllowSkip)
+        public override void MapInplace(Func<T, T> f, Zeros zeros)
         {
             CommonParallel.For(0, Data.Length, 4096, (a, b) =>
             {
@@ -830,7 +830,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             });
         }
 
-        public override void MapIndexedInplace(Func<int, int, T, T> f, Zeros zeros = Zeros.AllowSkip)
+        public override void MapIndexedInplace(Func<int, int, T, T> f, Zeros zeros)
         {
             CommonParallel.For(0, ColumnCount, Math.Max(4096/RowCount, 32), (a, b) =>
             {

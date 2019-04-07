@@ -53,12 +53,12 @@ namespace MathNet.Numerics
         {
             if (z <= 0.0)
             {
-                throw new ArgumentException(Resources.ArgumentMustBePositive, "z");
+                throw new ArgumentException(Resources.ArgumentMustBePositive, nameof(z));
             }
 
             if (w <= 0.0)
             {
-                throw new ArgumentException(Resources.ArgumentMustBePositive, "w");
+                throw new ArgumentException(Resources.ArgumentMustBePositive, nameof(w));
             }
 
             return GammaLn(z) + GammaLn(w) - GammaLn(z + w);
@@ -101,17 +101,17 @@ namespace MathNet.Numerics
         {
             if (a < 0.0)
             {
-                throw new ArgumentOutOfRangeException("a", Resources.ArgumentNotNegative);
+                throw new ArgumentOutOfRangeException(nameof(a), Resources.ArgumentNotNegative);
             }
 
             if (b < 0.0)
             {
-                throw new ArgumentOutOfRangeException("b", Resources.ArgumentNotNegative);
+                throw new ArgumentOutOfRangeException(nameof(b), Resources.ArgumentNotNegative);
             }
 
             if (x < 0.0 || x > 1.0)
             {
-                throw new ArgumentOutOfRangeException("x", Resources.ArgumentInIntervalXYInclusive);
+                throw new ArgumentOutOfRangeException(nameof(x), Resources.ArgumentInIntervalXYInclusive);
             }
 
             var bt = (x == 0.0 || x == 1.0)
@@ -146,7 +146,7 @@ namespace MathNet.Numerics
             d = 1.0/d;
             var h = d;
 
-            for (int m = 1, m2 = 2; m <= 140; m++, m2 += 2)
+            for (int m = 1, m2 = 2; m <= 50000; m++, m2 += 2)
             {
                 var aa = m*(b - m)*x/((qam + m2)*(a + m2));
                 d = 1.0 + (aa*d);

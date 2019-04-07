@@ -96,6 +96,9 @@ namespace MathNet.Numerics
         /// <summary>The number sqrt(2pi)</summary>
         public const double Sqrt2Pi = 2.5066282746310005024157652848110452530069867406099d;
 
+        /// <summary>The number sqrt(pi/2)</summary>
+        public const double SqrtPiOver2 = 1.2533141373155002512078826424055226265034933703050d;
+
         /// <summary>The number sqrt(2*pi*e)</summary>
         public const double Sqrt2PiE = 4.1327313541224929384693918842998526494455219169913d;
 
@@ -287,7 +290,7 @@ namespace MathNet.Numerics
         /// <summary>Classical Electron Radius: [m] (2007 CODATA)</summary>
         public const double ClassicalElectronRadius = 2.8179402894e-15;
 
-        /// <summary>Tomson Cross Section: [m^2] (2002 CODATA)</summary>
+        /// <summary>Thomson Cross Section: [m^2] (2002 CODATA)</summary>
         public const double ThomsonCrossSection = 0.6652458558e-28;
 
         /// <summary>Electron Magnetic Moment: [J T^-1] (2007 CODATA)</summary>

@@ -36,12 +36,6 @@ namespace MathNet.Numerics.Financial
 {
     public static class AbsoluteReturnMeasures
     {
-        [Obsolete("Use CompoundReturn instead, will be removed in v4.0")]
-        public static double CompoundMonthlyReturn(this IEnumerable<double> data)
-        {
-            return CompoundReturn(data);
-        }
-
         /// <summary>
         /// Compound Monthly Return or Geometric Return or Annualized Return
         /// </summary>
@@ -49,7 +43,7 @@ namespace MathNet.Numerics.Financial
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             int count = 0;
@@ -73,7 +67,7 @@ namespace MathNet.Numerics.Financial
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             return data.Where(x => x >= 0).Mean();
@@ -89,7 +83,7 @@ namespace MathNet.Numerics.Financial
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             return data.Where(x => x < 0).Mean();

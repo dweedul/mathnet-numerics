@@ -34,13 +34,11 @@ using MathNet.Numerics.Distributions;
 using MathNet.Numerics.Properties;
 using MathNet.Numerics.Random;
 using MathNet.Numerics.Threading;
+using BigInteger = System.Numerics.BigInteger;
+using Complex = System.Numerics.Complex;
 
 namespace MathNet.Numerics
 {
-#if !NOSYSNUMERICS
-    using System.Numerics;
-#endif
-
     public static class Generate
     {
         /// <summary>
@@ -71,7 +69,7 @@ namespace MathNet.Numerics
         {
             if (pointsA.Length != pointsB.Length)
             {
-                throw new ArgumentException(Resources.ArgumentArraysSameLength, "pointsB");
+                throw new ArgumentException(Resources.ArgumentArraysSameLength, nameof(pointsB));
             }
 
             var res = new T[pointsA.Length];
@@ -98,7 +96,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             if (length == 0) return new double[0];
@@ -122,7 +120,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             if (length == 0) return new T[0];
@@ -147,7 +145,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             if (length == 0) return new double[0];
@@ -171,7 +169,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             if (length == 0) return new T[0];
@@ -338,7 +336,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             double step = frequency/samplingRate*amplitude;
@@ -374,7 +372,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             double step = frequency/samplingRate*amplitude;
@@ -467,7 +465,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             double step = frequency/samplingRate*Constants.Pi2;
@@ -605,7 +603,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new T[length];
@@ -641,7 +639,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new double[length];
@@ -680,7 +678,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new double[length];
@@ -725,7 +723,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new double[length];
@@ -771,7 +769,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new T[length];
@@ -797,8 +795,6 @@ namespace MathNet.Numerics
             }
         }
 
-#if !NOSYSNUMERICS
-
         /// <summary>
         /// Generate a Fibonacci sequence, including zero as first value.
         /// </summary>
@@ -806,7 +802,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var data = new BigInteger[length];
@@ -846,8 +842,6 @@ namespace MathNet.Numerics
             }
         }
 
-#endif
-
         /// <summary>
         /// Create random samples, uniform between 0 and 1.
         /// Faster than other methods but with reduced guarantees on randomness.
@@ -856,7 +850,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             return SystemRandomSource.FastDoubles(length);
@@ -880,7 +874,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples = SystemRandomSource.FastDoubles(length);
@@ -904,7 +898,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples1 = SystemRandomSource.FastDoubles(length);
@@ -954,7 +948,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples = new double[length];
@@ -971,65 +965,13 @@ namespace MathNet.Numerics
         }
 
         /// <summary>
-        /// Create samples with independent amplitudes of normal distribution and a flat spectral density.
-        /// </summary>
-        [Obsolete("Use Normal instead. Will be removed in v4.")]
-        public static double[] Gaussian(int length, double mean, double standardDeviation)
-        {
-            return Normal(length, mean, standardDeviation);
-        }
-
-        /// <summary>
-        /// Create an infinite sample sequence with independent amplitudes of normal distribution and a flat spectral density.
-        /// </summary>
-        [Obsolete("Use NormalSequence instead. Will be removed in v4.")]
-        public static IEnumerable<double> GaussianSequence(double mean, double standardDeviation)
-        {
-            return NormalSequence(mean, standardDeviation);
-        }
-
-        /// <summary>
-        /// Create skew alpha stable samples.
-        /// </summary>
-        /// <param name="length">The number of samples to generate.</param>
-        /// <param name="alpha">Stability alpha-parameter of the stable distribution</param>
-        /// <param name="beta">Skewness beta-parameter of the stable distribution</param>
-        /// <param name="scale">Scale c-parameter of the stable distribution</param>
-        /// <param name="location">Location mu-parameter of the stable distribution</param>
-        [Obsolete("Will be removed in v4.")]
-        public static double[] Stable(int length, double alpha, double beta, double scale, double location)
-        {
-            if (length < 0)
-            {
-                throw new ArgumentOutOfRangeException("length");
-            }
-
-            var samples = new double[length];
-            Distributions.Stable.Samples(SystemRandomSource.Default, samples, alpha, beta, scale, location);
-            return samples;
-        }
-
-        /// <summary>
-        /// Create skew alpha stable samples.
-        /// </summary>
-        /// <param name="alpha">Stability alpha-parameter of the stable distribution</param>
-        /// <param name="beta">Skewness beta-parameter of the stable distribution</param>
-        /// <param name="scale">Scale c-parameter of the stable distribution</param>
-        /// <param name="location">Location mu-parameter of the stable distribution</param>
-        [Obsolete("Will be removed in v4.")]
-        public static IEnumerable<double> StableSequence(double alpha, double beta, double scale, double location)
-        {
-            return Distributions.Stable.Samples(SystemRandomSource.Default, alpha, beta, scale, location);
-        }
-
-        /// <summary>
         /// Create random samples.
         /// </summary>
         public static double[] Random(int length, IContinuousDistribution distribution)
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples = new double[length];
@@ -1052,7 +994,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples = new double[length];
@@ -1107,7 +1049,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples = new double[length];
@@ -1130,7 +1072,7 @@ namespace MathNet.Numerics
         {
             if (length < 0)
             {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
 
             var samples1 = new double[length];
@@ -1147,7 +1089,5 @@ namespace MathNet.Numerics
         {
             return distribution.Samples().Zip(distribution.Samples(), map);
         }
-
-
     }
 }

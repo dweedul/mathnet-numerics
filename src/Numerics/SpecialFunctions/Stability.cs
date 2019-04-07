@@ -28,10 +28,7 @@
 // </copyright>
 
 using System;
-
-#if !NOSYSNUMERICS
-using System.Numerics;
-#endif
+using Complex = System.Numerics.Complex;
 
 // ReSharper disable CheckNamespace
 namespace MathNet.Numerics

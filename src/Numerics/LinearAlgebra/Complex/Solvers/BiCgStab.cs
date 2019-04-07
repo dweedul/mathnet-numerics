@@ -33,12 +33,7 @@ using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
 {
-
-#if NOSYSNUMERICS
-    using Complex = Numerics.Complex;
-#else
     using Complex = System.Numerics.Complex;
-#endif
 
     /// <summary>
     /// A Bi-Conjugate Gradient stabilized iterative matrix solver.
@@ -103,7 +98,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         {
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             if (result.Count != input.Count)

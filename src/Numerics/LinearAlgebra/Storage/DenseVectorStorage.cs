@@ -57,12 +57,12 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (data.Length != length)
             {
-                throw new ArgumentOutOfRangeException("data", string.Format(Resources.ArgumentArrayWrongLength, length));
+                throw new ArgumentOutOfRangeException(nameof(data), string.Format(Resources.ArgumentArrayWrongLength, length));
             }
 
             Data = data;
@@ -117,7 +117,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (length < 1)
             {
-                throw new ArgumentOutOfRangeException("length", string.Format(Resources.ArgumentLessThanOne, length));
+                throw new ArgumentOutOfRangeException(nameof(length), string.Format(Resources.ArgumentLessThanOne, length));
             }
 
             var data = new T[length];
@@ -135,7 +135,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (length < 1)
             {
-                throw new ArgumentOutOfRangeException("length", string.Format(Resources.ArgumentLessThanOne, length));
+                throw new ArgumentOutOfRangeException(nameof(length), string.Format(Resources.ArgumentLessThanOne, length));
             }
 
             var data = new T[length];
@@ -153,7 +153,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var arrayData = data as T[];
@@ -172,7 +172,7 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             var array = new T[length];
@@ -436,7 +436,29 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
             return base.Find2Unchecked(other, predicate, zeros);
         }
 
-        // FUNCTIONAL COMBINATORS
+        // FUNCTIONAL COMBINATORS: MAP
+
+        public override void MapInplace(Func<T, T> f, Zeros zeros)
+        {
+            CommonParallel.For(0, Data.Length, 4096, (a, b) =>
+            {
+                for (int i = a; i < b; i++)
+                {
+                    Data[i] = f(Data[i]);
+                }
+            });
+        }
+
+        public override void MapIndexedInplace(Func<int, T, T> f, Zeros zeros)
+        {
+            CommonParallel.For(0, Data.Length, 4096, (a, b) =>
+            {
+                for (int i = a; i < b; i++)
+                {
+                    Data[i] = f(i, Data[i]);
+                }
+            });
+        }
 
         internal override void MapToUnchecked<TU>(VectorStorage<TU> target, Func<T, TU> f, Zeros zeros, ExistingData existingData)
         {
@@ -538,6 +560,8 @@ namespace MathNet.Numerics.LinearAlgebra.Storage
 
             base.Map2ToUnchecked(target, other, f, zeros, existingData);
         }
+
+        // FUNCTIONAL COMBINATORS: FOLD
 
         internal override TState Fold2Unchecked<TOther, TState>(VectorStorage<TOther> other, Func<TState, T, TOther, TState> f, TState state, Zeros zeros)
         {

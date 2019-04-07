@@ -37,12 +37,7 @@ using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
 {
-
-#if NOSYSNUMERICS
-    using Complex = Numerics.Complex;
-#else
     using Complex = System.Numerics.Complex;
-#endif
 
     /// <summary>
     /// A Multiple-Lanczos Bi-Conjugate Gradient stabilized iterative matrix solver.
@@ -56,7 +51,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
     /// The algorithm was taken from: <br/>
     /// ML(k)BiCGSTAB: A BiCGSTAB variant based on multiple Lanczos starting vectors
     /// <br/>
-    /// Man-chung Yeung and Tony F. Chan
+    /// Man-Chung Yeung and Tony F. Chan
     /// <br/>
     /// SIAM Journal of Scientific Computing
     /// <br/>
@@ -101,7 +96,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
             {
                 if (value <= 1)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _numberOfStartingVectors = value;
@@ -193,7 +188,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
             var orthogonalMatrix = gs.Q;
 
             // Now transfer this to vectors
-            var result = new List<Vector<Complex>>();
+            var result = new List<Vector<Complex>>(orthogonalMatrix.ColumnCount);
             for (var i = 0; i < orthogonalMatrix.ColumnCount; i++)
             {
                 result.Add(orthogonalMatrix.Column(i));
@@ -206,7 +201,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         }
 
         /// <summary>
-        /// Create random vecrors array
+        /// Create random vectors array
         /// </summary>
         /// <param name="arraySize">Number of vectors</param>
         /// <param name="vectorSize">Size of each vector</param>
@@ -252,7 +247,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         {
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             if (input.Count != matrix.RowCount || result.Count != input.Count)

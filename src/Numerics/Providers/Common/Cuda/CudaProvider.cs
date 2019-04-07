@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -34,18 +34,27 @@ using System.Collections.Generic;
 
 namespace MathNet.Numerics.Providers.Common.Cuda
 {
-    internal static class CudaProvider
+    public static class CudaProvider
     {
+        const int DesignTimeRevision = 1;
+        const int MinimumCompatibleRevision = 1;
+
         static int _nativeRevision;
         static bool _nativeX86;
         static bool _nativeX64;
         static bool _nativeIA64;
+        static bool _loaded;
 
-        public static bool IsAvailable(int minRevision)
+        public static bool IsAvailable(string hintPath = null)
         {
+            if (_loaded)
+            {
+                return true;
+            }
+
             try
             {
-                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName))
+                if (!NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath))
                 {
                     return false;
                 }
@@ -53,7 +62,7 @@ namespace MathNet.Numerics.Providers.Common.Cuda
                 int a = SafeNativeMethods.query_capability(0);
                 int b = SafeNativeMethods.query_capability(1);
                 int nativeRevision = SafeNativeMethods.query_capability((int)ProviderConfig.Revision);
-                return a == 0 && b == -1 && nativeRevision >= minRevision;
+                return a == 0 && b == -1 && nativeRevision >= MinimumCompatibleRevision;
             }
             catch
             {
@@ -61,12 +70,18 @@ namespace MathNet.Numerics.Providers.Common.Cuda
             }
         }
 
-        public static void Load(int minRevision)
+        /// <returns>Revision</returns>
+        public static int Load(string hintPath = null)
         {
+            if (_loaded)
+            {
+                return _nativeRevision;
+            }
+
             int a, b;
             try
             {
-                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName);
+                NativeProviderLoader.TryLoad(SafeNativeMethods.DllName, hintPath);
 
                 a = SafeNativeMethods.query_capability(0);
                 b = SafeNativeMethods.query_capability(1);
@@ -89,21 +104,38 @@ namespace MathNet.Numerics.Providers.Common.Cuda
                 throw new NotSupportedException("Cuda Native Provider does not support capability querying and is therefore not compatible. Consider upgrading to a newer version.", e);
             }
 
-            if (a != 0 || b != -1 || _nativeRevision < minRevision)
+            if (a != 0 || b != -1 || _nativeRevision < MinimumCompatibleRevision)
             {
                 throw new NotSupportedException("Cuda Native Provider too old. Consider upgrading to a newer version.");
             }
+
+            _loaded = true;
+            return _nativeRevision;
+        }
+
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// This method is safe to call, even if the provider is not loaded.
+        /// </summary>
+        public static void FreeResources()
+        {
         }
 
         public static string Describe()
         {
+            if (!_loaded)
+            {
+                return "Nvidia CUDA (not loaded)";
+            }
+
             var parts = new List<string>();
             if (_nativeX86) parts.Add("x86");
             if (_nativeX64) parts.Add("x64");
             if (_nativeIA64) parts.Add("IA64");
             parts.Add("revision " + _nativeRevision);
 
-            return string.Concat("Nvidia CUDA (", string.Join("; ", parts), ")");
+            return string.Concat("Nvidia CUDA (", string.Join("; ", parts.ToArray()), ")");
         }
     }
 }

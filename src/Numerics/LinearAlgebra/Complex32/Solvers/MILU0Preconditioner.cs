@@ -40,7 +40,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
     /// A simple milu(0) preconditioner.
     /// </summary>
     /// <remarks>
-    /// Original Fortran code by Youcef Saad (07 January 2004)
+    /// Original Fortran code by Yousef Saad (07 January 2004)
     /// </remarks>
     public sealed class MILU0Preconditioner : IPreconditioner<Complex32>
     {
@@ -86,14 +86,14 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             var csr = matrix.Storage as SparseCompressedRowMatrixStorage<Complex32>;
             if (csr == null)
             {
-                throw new ArgumentException(Resources.MatrixMustBeSparse, "matrix");
+                throw new ArgumentException(Resources.MatrixMustBeSparse, nameof(matrix));
             }
 
             // Dimension of matrix
             int n = csr.RowCount;
             if (n != csr.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             // Original matrix compressed sparse row storage.

@@ -32,12 +32,7 @@ using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.LinearAlgebra.Double.Factorization
 {
-
-#if NOSYSNUMERICS
-    using Numerics;
-#else
-    using System.Numerics;
-#endif
+    using Complex = System.Numerics.Complex;
 
     /// <summary>
     /// Eigenvalues and eigenvectors of a real matrix.
@@ -73,7 +68,7 @@ namespace MathNet.Numerics.LinearAlgebra.Double.Factorization
 
             var order = matrix.RowCount;
 
-            // Initialize matricies for eigenvalues and eigenvectors
+            // Initialize matrices for eigenvalues and eigenvectors
             var eigenVectors = Matrix<double>.Build.SameAs(matrix, order, order, fullyMutable: true);
             var blockDiagonal = Matrix<double>.Build.SameAs(matrix, order, order);
             var eigenValues = new LinearAlgebra.Complex.DenseVector(order);

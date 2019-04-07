@@ -29,15 +29,11 @@
 
 using System;
 using MathNet.Numerics.Properties;
+using MathNet.Numerics.Providers.LinearAlgebra;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex.Factorization
 {
-
-#if NOSYSNUMERICS
-    using Numerics;
-#else
-    using System.Numerics;
-#endif
+    using Complex = System.Numerics.Complex;
 
     /// <summary>
     /// <para>A class which encapsulates the functionality of the singular value decomposition (SVD) for <see cref="DenseMatrix"/>.</para>
@@ -69,7 +65,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Factorization
             var s = new DenseVector(nm);
             var u = new DenseMatrix(matrix.RowCount);
             var vt = new DenseMatrix(matrix.ColumnCount);
-            Control.LinearAlgebraProvider.SingularValueDecomposition(computeVectors, ((DenseMatrix) matrix.Clone()).Values, matrix.RowCount, matrix.ColumnCount, s.Values, u.Values, vt.Values);
+            LinearAlgebraControl.Provider.SingularValueDecomposition(computeVectors, ((DenseMatrix) matrix.Clone()).Values, matrix.RowCount, matrix.ColumnCount, s.Values, u.Values, vt.Values);
 
             return new DenseSvd(s, u, vt, computeVectors);
         }
@@ -121,7 +117,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Factorization
                 throw new NotSupportedException("Can only do SVD factorization for dense matrices at the moment.");
             }
 
-            Control.LinearAlgebraProvider.SvdSolveFactored(U.RowCount, VT.ColumnCount, ((DenseVector) S).Values, ((DenseMatrix) U).Values, ((DenseMatrix) VT).Values, dinput.Values, input.ColumnCount, dresult.Values);
+            LinearAlgebraControl.Provider.SvdSolveFactored(U.RowCount, VT.ColumnCount, ((DenseVector) S).Values, ((DenseMatrix) U).Values, ((DenseMatrix) VT).Values, dinput.Values, input.ColumnCount, dresult.Values);
         }
 
         /// <summary>
@@ -161,7 +157,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Factorization
                 throw new NotSupportedException("Can only do SVD factorization for dense vectors at the moment.");
             }
 
-            Control.LinearAlgebraProvider.SvdSolveFactored(U.RowCount, VT.ColumnCount, ((DenseVector) S).Values, ((DenseMatrix) U).Values, ((DenseMatrix) VT).Values, dinput.Values, 1, dresult.Values);
+            LinearAlgebraControl.Provider.SvdSolveFactored(U.RowCount, VT.ColumnCount, ((DenseVector) S).Values, ((DenseMatrix) U).Values, ((DenseMatrix) VT).Values, dinput.Values, 1, dresult.Values);
         }
     }
 }

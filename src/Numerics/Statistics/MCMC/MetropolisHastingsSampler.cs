@@ -30,11 +30,11 @@
 namespace MathNet.Numerics.Statistics.Mcmc
 {
     using System;
-    using Properties;
     using Distributions;
+    using Properties;
 
     /// <summary>
-    /// Metropolis-Hastings sampling produces samples from distribition P by sampling from a proposal distribution Q
+    /// Metropolis-Hastings sampling produces samples from distribution P by sampling from a proposal distribution Q
     /// and accepting/rejecting based on the density of P. Metropolis-Hastings sampling doesn't require that the
     /// proposal distribution Q is symmetric in comparison to <seealso cref="MetropolisSampler{T}"/>. It does need to
     /// be able to evaluate the proposal sampler's log density though. All densities are required to be in log space.

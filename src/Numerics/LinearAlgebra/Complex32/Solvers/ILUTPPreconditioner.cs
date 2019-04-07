@@ -122,17 +122,17 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         {
             if (fillLevel < 0)
             {
-                throw new ArgumentOutOfRangeException("fillLevel");
+                throw new ArgumentOutOfRangeException(nameof(fillLevel));
             }
 
             if (dropTolerance < 0)
             {
-                throw new ArgumentOutOfRangeException("dropTolerance");
+                throw new ArgumentOutOfRangeException(nameof(dropTolerance));
             }
 
             if (pivotTolerance < 0)
             {
-                throw new ArgumentOutOfRangeException("pivotTolerance");
+                throw new ArgumentOutOfRangeException(nameof(pivotTolerance));
             }
 
             _fillLevel = fillLevel;
@@ -167,7 +167,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _fillLevel = value;
@@ -198,7 +198,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dropTolerance = value;
@@ -231,7 +231,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _pivotTolerance = value;
@@ -295,12 +295,12 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         {
             if (matrix == null)
             {
-                throw new ArgumentNullException("matrix");
+                throw new ArgumentNullException(nameof(matrix));
             }
 
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             var sparseMatrix = matrix as SparseMatrix ?? SparseMatrix.OfMatrix(matrix);
@@ -583,11 +583,11 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         }
 
         /// <summary>
-        /// Sort vector descending, not changing vector but placing sorted indicies to <paramref name="sortedIndices"/>
+        /// Sort vector descending, not changing vector but placing sorted indices to <paramref name="sortedIndices"/>
         /// </summary>
         /// <param name="lowerBound">Start sort form</param>
         /// <param name="upperBound">Sort till upper bound</param>
-        /// <param name="sortedIndices">Array with sorted vector indicies</param>
+        /// <param name="sortedIndices">Array with sorted vector indices</param>
         /// <param name="values">Source <see cref="Vector"/></param>
         static void FindLargestItems(int lowerBound, int upperBound, int[] sortedIndices, Vector<Complex32> values)
         {
@@ -623,7 +623,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
 
             if ((lhs.Count != rhs.Count) || (lhs.Count != _upper.RowCount))
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "rhs");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(rhs));
             }
 
             // Solve equation here
@@ -737,11 +737,11 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         }
 
         /// <summary>
-        /// Build heap for double indicies
+        /// Build heap for double indices
         /// </summary>
         /// <param name="start">Root position</param>
         /// <param name="count">Length of <paramref name="values"/></param>
-        /// <param name="sortedIndices">Indicies of <paramref name="values"/></param>
+        /// <param name="sortedIndices">Indices of <paramref name="values"/></param>
         /// <param name="values">Target <see cref="Vector"/></param>
         private static void BuildDoubleIndexHeap(int start, int count, int[] sortedIndices, Vector<Complex32> values)
         {
@@ -753,9 +753,9 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         }
 
         /// <summary>
-        /// Sift double indicies
+        /// Sift double indices
         /// </summary>
-        /// <param name="sortedIndices">Indicies of <paramref name="values"/></param>
+        /// <param name="sortedIndices">Indices of <paramref name="values"/></param>
         /// <param name="values">Target <see cref="Vector"/></param>
         /// <param name="begin">Root position</param>
         /// <param name="count">Length of <paramref name="values"/></param>

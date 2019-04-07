@@ -29,15 +29,11 @@
 
 using System;
 using MathNet.Numerics.Properties;
+using MathNet.Numerics.Providers.LinearAlgebra;
 
 namespace MathNet.Numerics.LinearAlgebra.Single.Factorization
 {
-
-#if NOSYSNUMERICS
-    using Numerics;
-#else
-    using System.Numerics;
-#endif
+    using Complex = System.Numerics.Complex;
 
     /// <summary>
     /// Eigenvalues and eigenvectors of a real matrix.
@@ -93,7 +89,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single.Factorization
                     break;
             }
 
-            Control.LinearAlgebraProvider.EigenDecomp(isSymmetric, order, matrix.Values, eigenVectors.Values, eigenValues.Values, blockDiagonal.Values);
+            LinearAlgebraControl.Provider.EigenDecomp(isSymmetric, order, matrix.Values, eigenVectors.Values, eigenValues.Values, blockDiagonal.Values);
 
             return new DenseEvd(eigenVectors, eigenValues, blockDiagonal, isSymmetric);
         }

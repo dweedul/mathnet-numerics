@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using MathNet.Numerics.Properties;
 
-#if !PORTABLE
+#if !NETSTANDARD1_3
 using System.Runtime;
 #endif
 
@@ -117,12 +117,12 @@ namespace MathNet.Numerics.Random
         {
             if (shortLag < 1)
             {
-                throw new ArgumentException(Resources.ArgumentMustBePositive, "shortLag");
+                throw new ArgumentException(Resources.ArgumentMustBePositive, nameof(shortLag));
             }
 
             if (longLag <= shortLag)
             {
-                throw new ArgumentException(Resources.ArgumentUpperBoundMustBeLargerThanLowerBound, "longLag");
+                throw new ArgumentException(Resources.ArgumentUpperBoundMustBeLargerThanLowerBound, nameof(longLag));
             }
 
             if (seed == 0)

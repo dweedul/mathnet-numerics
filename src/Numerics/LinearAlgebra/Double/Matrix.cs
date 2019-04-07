@@ -631,7 +631,7 @@ namespace MathNet.Numerics.LinearAlgebra.Double
         {
             if (norm <= 0.0)
             {
-                throw new ArgumentOutOfRangeException("norm", Resources.ArgumentMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(norm), Resources.ArgumentMustBePositive);
             }
 
             var ret = new double[RowCount];
@@ -663,7 +663,7 @@ namespace MathNet.Numerics.LinearAlgebra.Double
         {
             if (norm <= 0.0)
             {
-                throw new ArgumentOutOfRangeException("norm", Resources.ArgumentMustBePositive);
+                throw new ArgumentOutOfRangeException(nameof(norm), Resources.ArgumentMustBePositive);
             }
 
             var ret = new double[ColumnCount];
@@ -762,7 +762,7 @@ namespace MathNet.Numerics.LinearAlgebra.Double
         }
 
         /// <summary>
-        /// Evaluates whether this matrix is hermitian (conjugate symmetric).
+        /// Evaluates whether this matrix is Hermitian (conjugate symmetric).
         /// </summary>
         public sealed override bool IsHermitian()
         {

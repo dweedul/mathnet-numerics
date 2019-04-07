@@ -287,7 +287,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             if (scalar.Equals(Zero))
@@ -309,7 +309,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             var result = Build.SameAs(this, other);
@@ -328,7 +328,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoAdd(other, result);
@@ -361,7 +361,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             if (scalar.Equals(Zero))
@@ -395,7 +395,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoSubtractFrom(scalar, result);
@@ -421,7 +421,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoNegate(result);
@@ -431,13 +431,13 @@ namespace MathNet.Numerics.LinearAlgebra
         /// Subtracts another vector from this vector.
         /// </summary>
         /// <param name="other">The vector to subtract from this one.</param>
-        /// <returns>A new vector containing the subtraction of the the two vectors.</returns>
+        /// <returns>A new vector containing the subtraction of the two vectors.</returns>
         /// <exception cref="ArgumentException">If this vector and <paramref name="other"/> are not the same size.</exception>
         public Vector<T> Subtract(Vector<T> other)
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             var result = Build.SameAs(this, other);
@@ -456,7 +456,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoSubtract(other, result);
@@ -481,7 +481,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoConjugate(result);
@@ -519,7 +519,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             if (scalar.Equals(One))
@@ -546,7 +546,7 @@ namespace MathNet.Numerics.LinearAlgebra
         /// <seealso cref="ConjugateDotProduct"/>
         public T DotProduct(Vector<T> other)
         {
-            if (Count != other.Count) throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+            if (Count != other.Count) throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
 
             return DoDotProduct(other);
         }
@@ -561,7 +561,7 @@ namespace MathNet.Numerics.LinearAlgebra
         /// <seealso cref="DotProduct"/>
         public T ConjugateDotProduct(Vector<T> other)
         {
-            if (Count != other.Count) throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+            if (Count != other.Count) throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
 
             return DoConjugateDotProduct(other);
         }
@@ -593,7 +593,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             if (scalar.Equals(One))
@@ -627,7 +627,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoDivideByThis(scalar, result);
@@ -656,7 +656,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoModulus(divisor, result);
@@ -685,7 +685,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoModulusByThis(dividend, result);
@@ -714,7 +714,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoRemainder(divisor, result);
@@ -743,7 +743,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoRemainderByThis(dividend, result);
@@ -759,7 +759,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             var result = Build.SameAs(this, other);
@@ -778,12 +778,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseMultiply(other, result);
@@ -799,7 +799,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             var result = Build.SameAs(this, divisor);
@@ -818,12 +818,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseDivide(divisor, result);
@@ -850,7 +850,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwisePower(exponent, result);
@@ -864,7 +864,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != exponent.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "exponent");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(exponent));
             }
 
             var result = Build.SameAs(this);
@@ -882,12 +882,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != exponent.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "exponent");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(exponent));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwisePower(exponent, result);
@@ -903,7 +903,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             var result = Build.SameAs(this, divisor);
@@ -923,12 +923,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseModulus(divisor, result);
@@ -943,7 +943,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             var result = Build.SameAs(this, divisor);
@@ -963,12 +963,12 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != divisor.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "divisor");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(divisor));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseRemainder(divisor, result);
@@ -1000,7 +1000,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             f(result);
@@ -1013,7 +1013,7 @@ namespace MathNet.Numerics.LinearAlgebra
         /// the scalar argument.  The copy is then returned as the result
         /// </summary>
         /// <param name="f">Function which takes a scalar and a vector, modifies the vector in place and returns void</param>
-        /// <param name="x">The scalar to be passed to the function</param>
+        /// <param name="other">The scalar to be passed to the function</param>
         /// <returns>The resulting vector</returns>
         protected Vector<T> PointwiseBinary(Action<T, Vector<T>> f, T other)
         {
@@ -1028,12 +1028,13 @@ namespace MathNet.Numerics.LinearAlgebra
         /// </summary>
         /// <param name="f">Function which takes a scalar and a vector, modifies the vector in place and returns void</param>
         /// <param name="x">The scalar to be passed to the function</param>
+        /// <param name="result">The vector where the result will be placed</param>
         /// <exception cref="ArgumentException">If this vector and <paramref name="result"/> are not the same size.</exception>
         protected void PointwiseBinary(Action<T, Vector<T>> f, T x, Vector<T> result)
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
             f(x, result);
         }
@@ -1047,12 +1048,12 @@ namespace MathNet.Numerics.LinearAlgebra
         /// <param name="f">Function which takes two vectors, modifies the second in place and returns void</param>
         /// <param name="other">The other vector to be passed to the function as argument. It is not modified</param>
         /// <returns>The resulting vector</returns>
-        /// <exception cref="ArgumentException">If this vector and <paramref name="result"/> are not the same size.</exception>
+        /// <exception cref="ArgumentException">If this vector and <paramref name="other"/> are not the same size.</exception>
         protected Vector<T> PointwiseBinary(Action<Vector<T>, Vector<T>> f, Vector<T> other)
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             var result = Build.SameAs(this, other);
@@ -1066,18 +1067,18 @@ namespace MathNet.Numerics.LinearAlgebra
         /// </summary>
         /// <param name="f">Function which takes two vectors, modifies the second in place and returns void</param>
         /// <param name="other">The other vector to be passed to the function as argument. It is not modified</param>
-        /// <returns>The resulting vector</returns>
-        /// <exception cref="ArgumentException">If this vector and <paramref name="result"/> are not the same size.</exception>
+        /// <param name="result">The resulting vector</param>
+        /// <exception cref="ArgumentException">If this vector and <paramref name="other"/> are not the same size.</exception>
         protected void PointwiseBinary(Action<Vector<T>, Vector<T>> f, Vector<T> other, Vector<T> result)
         {
             if (Count != other.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "other");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(other));
             }
 
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
             f(other, result);
         }
@@ -1192,7 +1193,6 @@ namespace MathNet.Numerics.LinearAlgebra
         /// 'this' vector being the 'y'
         /// </summary>
         /// <param name="other"></param>
-        /// <returns></returns>
         public Vector<T> PointwiseAtan2(Vector<T> other)
         {
             return PointwiseBinary(DoPointwiseAtan2, other);
@@ -1204,7 +1204,7 @@ namespace MathNet.Numerics.LinearAlgebra
         /// 'this' vector being the 'y'
         /// </summary>
         /// <param name="other"></param>
-        /// <returns></returns>
+        /// <param name="result">The vector to store the result</param>
         public void PointwiseAtan2(Vector<T> other, Vector<T> result)
         {
             PointwiseBinary(DoPointwiseAtan2, other, result);
@@ -1434,7 +1434,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.RowCount || other.Count != result.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixDimensions, "result");
+                throw new ArgumentException(Resources.ArgumentMatrixDimensions, nameof(result));
             }
 
             DoOuterProduct(other, result);
@@ -1466,7 +1466,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseMinimum(scalar, result);
@@ -1493,7 +1493,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseMaximum(scalar, result);
@@ -1520,7 +1520,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseAbsoluteMinimum(scalar, result);
@@ -1547,7 +1547,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseAbsoluteMaximum(scalar, result);
@@ -1574,7 +1574,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseMinimum(other, result);
@@ -1601,7 +1601,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseMaximum(other, result);
@@ -1628,7 +1628,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseAbsoluteMinimum(other, result);
@@ -1655,7 +1655,7 @@ namespace MathNet.Numerics.LinearAlgebra
         {
             if (Count != result.Count)
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "result");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(result));
             }
 
             DoPointwiseAbsoluteMaximum(other, result);

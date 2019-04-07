@@ -49,7 +49,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
     /// The algorithm was taken from: <br/>
     /// ML(k)BiCGSTAB: A BiCGSTAB variant based on multiple Lanczos starting vectors
     /// <br/>
-    /// Man-chung Yeung and Tony F. Chan
+    /// Man-Chung Yeung and Tony F. Chan
     /// <br/>
     /// SIAM Journal of Scientific Computing
     /// <br/>
@@ -94,7 +94,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             {
                 if (value <= 1)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _numberOfStartingVectors = value;
@@ -186,7 +186,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
             var orthogonalMatrix = gs.Q;
 
             // Now transfer this to vectors
-            var result = new List<Vector<Numerics.Complex32>>();
+            var result = new List<Vector<Numerics.Complex32>>(orthogonalMatrix.ColumnCount);
             for (var i = 0; i < orthogonalMatrix.ColumnCount; i++)
             {
                 result.Add(orthogonalMatrix.Column(i));
@@ -245,7 +245,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex32.Solvers
         {
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             if (result.Count != input.Count)

@@ -27,22 +27,24 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 // </copyright>
 
-using MathNet.Numerics.Distributions;
-using MathNet.Numerics.LinearAlgebra.Storage;
-using MathNet.Numerics.Threading;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using MathNet.Numerics.Distributions;
+using MathNet.Numerics.LinearAlgebra.Storage;
+using MathNet.Numerics.Threading;
 
 namespace MathNet.Numerics.LinearAlgebra.Single
 {
+    using MathNet.Numerics.Providers.LinearAlgebra;
+
     /// <summary>
     /// A vector using dense storage.
     /// </summary>
     [Serializable]
-    [DebuggerDisplay("DenseVector {Count}-Single")]
+    [DebuggerDisplay("DenseVector {" + nameof(Count) + "}-Single")]
     public class DenseVector : Vector
     {
         /// <summary>
@@ -177,7 +179,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (vector == null)
             {
-                throw new ArgumentNullException("vector");
+                throw new ArgumentNullException(nameof(vector));
             }
 
             return vector.Values;
@@ -194,7 +196,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             return new DenseVector(array);
@@ -240,7 +242,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             }
             else
             {
-                Control.LinearAlgebraProvider.AddArrays(_values, otherDense._values, resultDense._values);
+                LinearAlgebraControl.Provider.AddArrays(_values, otherDense._values, resultDense._values);
             }
         }
 
@@ -256,7 +258,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (DenseVector)leftSide.Add(rightSide);
@@ -302,7 +304,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             }
             else
             {
-                Control.LinearAlgebraProvider.SubtractArrays(_values, otherDense._values, resultDense._values);
+                LinearAlgebraControl.Provider.SubtractArrays(_values, otherDense._values, resultDense._values);
             }
         }
 
@@ -316,7 +318,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (rightSide == null)
             {
-                throw new ArgumentNullException("rightSide");
+                throw new ArgumentNullException(nameof(rightSide));
             }
 
             return (DenseVector)rightSide.Negate();
@@ -334,7 +336,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (DenseVector)leftSide.Subtract(rightSide);
@@ -353,7 +355,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
                 return;
             }
 
-            Control.LinearAlgebraProvider.ScaleArray(-1.0f, _values, denseResult.Values);
+            LinearAlgebraControl.Provider.ScaleArray(-1.0f, _values, denseResult.Values);
         }
 
         /// <summary>
@@ -371,7 +373,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
                 return;
             }
 
-            Control.LinearAlgebraProvider.ScaleArray(scalar, _values, denseResult.Values);
+            LinearAlgebraControl.Provider.ScaleArray(scalar, _values, denseResult.Values);
         }
 
         /// <summary>
@@ -384,7 +386,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             var denseVector = other as DenseVector;
             return denseVector == null
                 ? base.DoDotProduct(other)
-                : Control.LinearAlgebraProvider.DotProduct(_values, denseVector.Values);
+                : LinearAlgebraControl.Provider.DotProduct(_values, denseVector.Values);
         }
 
         /// <summary>
@@ -398,7 +400,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (DenseVector)leftSide.Multiply(rightSide);
@@ -415,7 +417,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (rightSide == null)
             {
-                throw new ArgumentNullException("rightSide");
+                throw new ArgumentNullException(nameof(rightSide));
             }
 
             return (DenseVector)rightSide.Multiply(leftSide);
@@ -433,7 +435,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return leftSide.DotProduct(rightSide);
@@ -450,7 +452,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (DenseVector)leftSide.Divide(rightSide);
@@ -518,7 +520,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (leftSide == null)
             {
-                throw new ArgumentNullException("leftSide");
+                throw new ArgumentNullException(nameof(leftSide));
             }
 
             return (DenseVector)leftSide.Remainder(rightSide);
@@ -660,7 +662,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         /// <returns>Scalar <c>ret = ( ∑|this[i]|^p )^(1/p)</c></returns>
         public override double Norm(double p)
         {
-            if (p < 0d) throw new ArgumentOutOfRangeException("p");
+            if (p < 0d) throw new ArgumentOutOfRangeException(nameof(p));
 
             if (p == 1d) return L1Norm();
             if (p == 2d) return L2Norm();
@@ -675,10 +677,10 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         }
 
         /// <summary>
-        /// Pointwise divide this vector with another vector and stores the result into the result vector.
+        /// Pointwise multiply this vector with another vector and stores the result into the result vector.
         /// </summary>
-        /// <param name="other">The vector to pointwise divide this one by.</param>
-        /// <param name="result">The vector to store the result of the pointwise division.</param>
+        /// <param name="other">The vector to pointwise multiply this one by.</param>
+        /// <param name="result">The vector to store the result of the pointwise multiplication.</param>
         protected override void DoPointwiseMultiply(Vector<float> other, Vector<float> result)
         {
             var denseOther = other as DenseVector;
@@ -690,7 +692,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             }
             else
             {
-                Control.LinearAlgebraProvider.PointWiseMultiplyArrays(_values, denseOther._values, denseResult._values);
+                LinearAlgebraControl.Provider.PointWiseMultiplyArrays(_values, denseOther._values, denseResult._values);
             }
         }
 
@@ -711,7 +713,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             }
             else
             {
-                Control.LinearAlgebraProvider.PointWiseDivideArrays(_values, denseOther._values, denseResult._values);
+                LinearAlgebraControl.Provider.PointWiseDivideArrays(_values, denseOther._values, denseResult._values);
             }
         }
 
@@ -731,7 +733,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
             }
             else
             {
-                Control.LinearAlgebraProvider.PointWisePowerArrays(_values, denseExponent._values, denseResult._values);
+                LinearAlgebraControl.Provider.PointWisePowerArrays(_values, denseExponent._values, denseResult._values);
             }
         }
 
@@ -754,7 +756,7 @@ namespace MathNet.Numerics.LinearAlgebra.Single
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             value = value.Trim();

@@ -33,12 +33,7 @@ using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
 {
-
-#if NOSYSNUMERICS
-    using Complex = Numerics.Complex;
-#else
     using Complex = System.Numerics.Complex;
-#endif
 
     /// <summary>
     /// An incomplete, level 0, LU factorization preconditioner.
@@ -110,12 +105,12 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         {
             if (matrix == null)
             {
-                throw new ArgumentNullException("matrix");
+                throw new ArgumentNullException(nameof(matrix));
             }
 
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             _decompositionLU = SparseMatrix.OfMatrix(matrix);

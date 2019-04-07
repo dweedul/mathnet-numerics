@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2016 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -37,10 +37,19 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
     /// <summary>
     /// NVidia's CUDA Toolkit linear algebra provider.
     /// </summary>
-    public partial class CudaLinearAlgebraProvider : ManagedLinearAlgebraProvider, IDisposable
+    internal partial class CudaLinearAlgebraProvider : Managed.ManagedLinearAlgebraProvider, IDisposable
     {
+        const int MinimumCompatibleRevision = 1;
+
+        readonly string _hintPath;
         IntPtr _blasHandle;
         IntPtr _solverHandle;
+
+        /// <param name="hintPath">Hint path where to look for the native binaries</param>
+        internal CudaLinearAlgebraProvider(string hintPath)
+        {
+            _hintPath = hintPath;
+        }
 
         /// <summary>
         /// Try to find out whether the provider is available, at least in principle.
@@ -48,7 +57,7 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
         /// </summary>
         public override bool IsAvailable()
         {
-            return CudaProvider.IsAvailable(minRevision: 1);
+            return CudaProvider.IsAvailable(hintPath: _hintPath);
         }
 
         /// <summary>
@@ -57,7 +66,11 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
         /// </summary>
         public override void InitializeVerify()
         {
-            CudaProvider.Load(minRevision: 1);
+            int revision = CudaProvider.Load(hintPath: _hintPath);
+            if (revision < MinimumCompatibleRevision)
+            {
+                throw new NotSupportedException($"Cuda Native Provider revision r{revision} is too old. Consider upgrading to a newer version. Revision r{MinimumCompatibleRevision} and newer are supported.");
+            }
 
             int linearAlgebra = SafeNativeMethods.query_capability((int)ProviderCapability.LinearAlgebraMajor);
 
@@ -69,6 +82,15 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
 
             BLAS(SafeNativeMethods.createBLASHandle(ref _blasHandle));
             Solver(SafeNativeMethods.createSolverHandle(ref _solverHandle));
+        }
+
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// </summary>
+        public override void FreeResources()
+        {
+            CudaProvider.FreeResources();
         }
 
         private void BLAS(int status)
@@ -88,7 +110,7 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
                     throw new ArgumentException("Invalid value");
 
                 case 8:  // CUBLAS_STATUS_ARCH_MISMATCH
-                    throw new NotSupportedException("The device does not support this opeation.");
+                    throw new NotSupportedException("The device does not support this operation.");
 
                 case 11: // CUBLAS_STATUS_MAPPING_ERROR
                     throw new Exception("Mapping error.");
@@ -164,6 +186,7 @@ namespace MathNet.Numerics.Providers.LinearAlgebra.Cuda
         {
             BLAS(SafeNativeMethods.destroyBLASHandle(_blasHandle));
             Solver(SafeNativeMethods.destroySolverHandle(_solverHandle));
+            FreeResources();
         }
     }
 }

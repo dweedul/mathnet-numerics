@@ -28,10 +28,7 @@
 // </copyright>
 
 using System;
-
-#if !NOSYSNUMERICS
-    using Complex = System.Numerics.Complex;
-#endif
+using Complex = System.Numerics.Complex;
 
 namespace MathNet.Numerics.RootFinding
 {

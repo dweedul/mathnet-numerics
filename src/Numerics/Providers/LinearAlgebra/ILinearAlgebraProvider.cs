@@ -3,7 +3,7 @@
 // http://numerics.mathdotnet.com
 // http://github.com/mathnet/mathnet-numerics
 //
-// Copyright (c) 2009-2013 Math.NET
+// Copyright (c) 2009-2018 Math.NET
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -28,14 +28,10 @@
 // </copyright>
 
 using MathNet.Numerics.LinearAlgebra.Factorization;
+using Complex = System.Numerics.Complex;
 
 namespace MathNet.Numerics.Providers.LinearAlgebra
 {
-
-#if !NOSYSNUMERICS
-    using Complex = System.Numerics.Complex;
-#endif
-
     /// <summary>
     /// How to transpose a matrix.
     /// </summary>
@@ -103,6 +99,12 @@ namespace MathNet.Numerics.Providers.LinearAlgebra
         /// Initialize and verify that the provided is indeed available. If not, fall back to alternatives like the managed provider
         /// </summary>
         void InitializeVerify();
+
+        /// <summary>
+        /// Frees memory buffers, caches and handles allocated in or to the provider.
+        /// Does not unload the provider itself, it is still usable afterwards.
+        /// </summary>
+        void FreeResources();
     }
 
     /// <summary>
@@ -438,10 +440,10 @@ namespace MathNet.Numerics.Providers.LinearAlgebra
         /// </summary>
         /// <param name="isSymmetric">Whether the matrix is symmetric or not.</param>
         /// <param name="order">The order of the matrix.</param>
-        /// <param name="matrix">The matrix to decompose. The lenth of the array must be order * order.</param>
-        /// <param name="matrixEv">On output, the matrix contains the eigen vectors. The lenth of the array must be order * order.</param>
-        /// <param name="vectorEv">On output, the eigen values (λ) of matrix in ascending value. The length of the arry must <paramref name="order"/>.</param>
-        /// <param name="matrixD">On output, the block diagonal eigenvalue matrix. The lenth of the array must be order * order.</param>
+        /// <param name="matrix">The matrix to decompose. The length of the array must be order * order.</param>
+        /// <param name="matrixEv">On output, the matrix contains the eigen vectors. The length of the array must be order * order.</param>
+        /// <param name="vectorEv">On output, the eigen values (λ) of matrix in ascending value. The length of the array must <paramref name="order"/>.</param>
+        /// <param name="matrixD">On output, the block diagonal eigenvalue matrix. The length of the array must be order * order.</param>
         void EigenDecomp(bool isSymmetric, int order, T[] matrix, T[] matrixEv, Complex[] vectorEv, T[] matrixD);
     }
 }

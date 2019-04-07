@@ -61,7 +61,7 @@ namespace MathNet.Numerics.Interpolation
 
             if (x.Length < 2)
             {
-                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), "x");
+                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), nameof(x));
             }
 
             _x = x;
@@ -73,7 +73,7 @@ namespace MathNet.Numerics.Interpolation
         }
 
         /// <summary>
-        /// Create a hermite cubic spline interpolation from a set of (x,y) value pairs and their slope (first derivative), sorted ascendingly by x.
+        /// Create a Hermite cubic spline interpolation from a set of (x,y) value pairs and their slope (first derivative), sorted ascendingly by x.
         /// </summary>
         public static CubicSpline InterpolateHermiteSorted(double[] x, double[] y, double[] firstDerivatives)
         {
@@ -84,7 +84,7 @@ namespace MathNet.Numerics.Interpolation
 
             if (x.Length < 2)
             {
-                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), "x");
+                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), nameof(x));
             }
 
             var c0 = new double[x.Length - 1];
@@ -105,7 +105,7 @@ namespace MathNet.Numerics.Interpolation
         }
 
         /// <summary>
-        /// Create a hermite cubic spline interpolation from an unsorted set of (x,y) value pairs and their slope (first derivative).
+        /// Create a Hermite cubic spline interpolation from an unsorted set of (x,y) value pairs and their slope (first derivative).
         /// WARNING: Works in-place and can thus causes the data array to be reordered.
         /// </summary>
         public static CubicSpline InterpolateHermiteInplace(double[] x, double[] y, double[] firstDerivatives)
@@ -117,7 +117,7 @@ namespace MathNet.Numerics.Interpolation
 
             if (x.Length < 2)
             {
-                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), "x");
+                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), nameof(x));
             }
 
             Sorting.Sort(x, y, firstDerivatives);
@@ -125,7 +125,7 @@ namespace MathNet.Numerics.Interpolation
         }
 
         /// <summary>
-        /// Create a hermite cubic spline interpolation from an unsorted set of (x,y) value pairs and their slope (first derivative).
+        /// Create a Hermite cubic spline interpolation from an unsorted set of (x,y) value pairs and their slope (first derivative).
         /// </summary>
         public static CubicSpline InterpolateHermite(IEnumerable<double> x, IEnumerable<double> y, IEnumerable<double> firstDerivatives)
         {
@@ -146,7 +146,7 @@ namespace MathNet.Numerics.Interpolation
 
             if (x.Length < 5)
             {
-                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 5), "x");
+                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 5), nameof(x));
             }
 
             /* Prepare divided differences (diff) and weights (w) */
@@ -226,7 +226,7 @@ namespace MathNet.Numerics.Interpolation
 
             if (x.Length < 2)
             {
-                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), "x");
+                throw new ArgumentException(string.Format(Resources.ArrayTooSmall, 2), nameof(x));
             }
 
             int n = x.Length;

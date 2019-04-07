@@ -34,12 +34,7 @@ using MathNet.Numerics.Properties;
 
 namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
 {
-
-#if NOSYSNUMERICS
-    using Complex = Numerics.Complex;
-#else
     using Complex = System.Numerics.Complex;
-#endif
 
     /// <summary>
     /// This class performs an Incomplete LU factorization with drop tolerance
@@ -127,17 +122,17 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         {
             if (fillLevel < 0)
             {
-                throw new ArgumentOutOfRangeException("fillLevel");
+                throw new ArgumentOutOfRangeException(nameof(fillLevel));
             }
 
             if (dropTolerance < 0)
             {
-                throw new ArgumentOutOfRangeException("dropTolerance");
+                throw new ArgumentOutOfRangeException(nameof(dropTolerance));
             }
 
             if (pivotTolerance < 0)
             {
-                throw new ArgumentOutOfRangeException("pivotTolerance");
+                throw new ArgumentOutOfRangeException(nameof(pivotTolerance));
             }
 
             _fillLevel = fillLevel;
@@ -172,7 +167,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _fillLevel = value;
@@ -203,7 +198,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dropTolerance = value;
@@ -236,7 +231,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
             {
                 if (value < 0)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _pivotTolerance = value;
@@ -300,12 +295,12 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         {
             if (matrix == null)
             {
-                throw new ArgumentNullException("matrix");
+                throw new ArgumentNullException(nameof(matrix));
             }
 
             if (matrix.RowCount != matrix.ColumnCount)
             {
-                throw new ArgumentException(Resources.ArgumentMatrixSquare, "matrix");
+                throw new ArgumentException(Resources.ArgumentMatrixSquare, nameof(matrix));
             }
 
             var sparseMatrix = matrix as SparseMatrix ?? SparseMatrix.OfMatrix(matrix);
@@ -552,20 +547,14 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         /// <returns><c>true</c> if performed, otherwise <c>false</c></returns>
         bool PivotMapFound(Dictionary<int, int> knownPivots, int currentItem)
         {
-            if (knownPivots.ContainsKey(_pivots[currentItem]))
+            if (knownPivots.TryGetValue(_pivots[currentItem], out var knownPivot) && knownPivot.Equals(currentItem))
             {
-                if (knownPivots[_pivots[currentItem]].Equals(currentItem))
-                {
-                    return true;
-                }
+                return true;
             }
 
-            if (knownPivots.ContainsKey(currentItem))
+            if (knownPivots.TryGetValue(currentItem, out var pivot) && pivot.Equals(_pivots[currentItem]))
             {
-                if (knownPivots[currentItem].Equals(_pivots[currentItem]))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
@@ -588,11 +577,11 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         }
 
         /// <summary>
-        /// Sort vector descending, not changing vector but placing sorted indicies to <paramref name="sortedIndices"/>
+        /// Sort vector descending, not changing vector but placing sorted indices to <paramref name="sortedIndices"/>
         /// </summary>
         /// <param name="lowerBound">Start sort form</param>
         /// <param name="upperBound">Sort till upper bound</param>
-        /// <param name="sortedIndices">Array with sorted vector indicies</param>
+        /// <param name="sortedIndices">Array with sorted vector indices</param>
         /// <param name="values">Source <see cref="Vector"/></param>
         static void FindLargestItems(int lowerBound, int upperBound, int[] sortedIndices, Vector<Complex> values)
         {
@@ -628,7 +617,7 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
 
             if ((lhs.Count != rhs.Count) || (lhs.Count != _upper.RowCount))
             {
-                throw new ArgumentException(Resources.ArgumentVectorsSameLength, "rhs");
+                throw new ArgumentException(Resources.ArgumentVectorsSameLength, nameof(rhs));
             }
 
             // Solve equation here
@@ -742,11 +731,11 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         }
 
         /// <summary>
-        /// Build heap for double indicies
+        /// Build heap for double indices
         /// </summary>
         /// <param name="start">Root position</param>
         /// <param name="count">Length of <paramref name="values"/></param>
-        /// <param name="sortedIndices">Indicies of <paramref name="values"/></param>
+        /// <param name="sortedIndices">Indices of <paramref name="values"/></param>
         /// <param name="values">Target <see cref="Vector{T}"/></param>
         private static void BuildDoubleIndexHeap(int start, int count, int[] sortedIndices, Vector<Complex> values)
         {
@@ -758,9 +747,9 @@ namespace MathNet.Numerics.LinearAlgebra.Complex.Solvers
         }
 
         /// <summary>
-        /// Sift double indicies
+        /// Sift double indices
         /// </summary>
-        /// <param name="sortedIndices">Indicies of <paramref name="values"/></param>
+        /// <param name="sortedIndices">Indices of <paramref name="values"/></param>
         /// <param name="values">Target <see cref="Vector{T}"/></param>
         /// <param name="begin">Root position</param>
         /// <param name="count">Length of <paramref name="values"/></param>
